@@ -1,0 +1,19 @@
+#
+# BULDING:
+#    $ docker build -t dcache/maven-tar-build -f Dockerfile.tar blackhole
+#
+# RUNNING:
+#    $ docker run -u `id -u`:`id -g` -t --rm --ulimit nofile=8192:8192 -m 2G -v `pwd`:/build dcache/maven-tar-build
+#
+
+FROM centos:8
+
+
+# Add build tools
+RUN dnf install -y maven git patch
+
+# Working directory
+RUN mkdir /build
+WORKDIR /build
+
+CMD ["mvn", "-B", "-Dmaven.repo.local=/.m2/repository", "-DskipTests", "-am", "-pl", "packages/tar", "package"]

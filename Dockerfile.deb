@@ -1,0 +1,32 @@
+#
+# BULDING:
+#    $ docker build -t dcache/maven-deb-build -f Dockerfile.rpm blackhole
+#
+# RUNNING:
+#    $ docker run -u `id -u`:`id -g` -t --rm --ulimit nofile=8192:8192 -m 2G -v `pwd`:/build dcache/maven-deb-build
+#
+
+FROM openjdk:8
+
+# Add build tools
+RUN set -ex \
+    && sed -i -- 's/# deb-src/deb-src/g' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+               build-essential \
+               cdbs \
+               devscripts \
+               equivs \
+               fakeroot \
+               maven \
+               quilt \
+               bash-completion \
+    && apt-get clean \
+    && rm -rf /tmp/* /var/tmp/*
+
+
+# Working directory
+RUN mkdir /build
+WORKDIR /build
+
+CMD ["mvn", "-B", "-Dmaven.repo.local=/.m2/repository", "-DskipTests", "-am", "-pl", "packages/fhs", "-P", "deb", "package"]

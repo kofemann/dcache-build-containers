@@ -1,19 +1,22 @@
 #
 # BULDING:
-#    $ docker build -t dcache/maven-tar-build -f Dockerfile.tar blackhole
+#    $ docker build -t dcache/maven-java11-tar-build -f Dockerfile.tar
 #
 # RUNNING:
-#    $ docker run -u `id -u`:`id -g` -t --rm --ulimit nofile=8192:8192 -m 2G -v `pwd`:/build dcache/maven-tar-build
+#    $ docker run -u `id -u`:`id -g` -t --rm --ulimit nofile=8192:8192 -m 2G -v `pwd`:/build dcache/maven-java11-tar-build
 #
 
 FROM centos:8
 
 
 # Add build tools
-RUN dnf install -y maven git patch
+RUN dnf install -y maven git patch java-11-openjdk-devel
 
 # Working directory
 RUN mkdir /build
 WORKDIR /build
+
+# force maven to use java11
+ENV JAVA_HOME=/usr/lib/jvm/java-11
 
 CMD ["mvn", "-B", "-Dmaven.repo.local=/.m2/repository", "-DskipTests", "-am", "-pl", "packages/tar", "package"]

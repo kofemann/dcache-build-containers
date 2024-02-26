@@ -6,11 +6,11 @@
 #    $ docker run -u `id -u`:`id -g` -t --rm --ulimit nofile=8192:8192 -m 2G -v `pwd`:/build dcache/maven-java17-rpm-build
 #
 
-FROM almalinux:8
+FROM almalinux:9
 
 
 # Add build tools
-RUN dnf install -y maven git patch rpm-build java-17-openjdk-devel
+RUN dnf install -y maven-openjdk17 git patch rpm-build java-17-openjdk-devel
 
 # Working directory
 RUN mkdir /build
